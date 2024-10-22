@@ -205,6 +205,7 @@ public class RuleService {
         	 ASTNode leftNode = convertToASTNode(node.getLeft());
         	String left=leftNode.getValue();
         	//dfgkdgf
+        	//hi hello hi
             leftNode.setValue(data.get("left").toString());//override
             return leftNode;
         }
