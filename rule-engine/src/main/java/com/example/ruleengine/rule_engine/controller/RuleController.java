@@ -38,13 +38,13 @@ public class RuleController {
         return ResponseEntity.ok(result);
     }
 
-//    @PostMapping("/modify_rule")
-//    public ResponseEntity<Rule> modifyRule(@RequestBody Map<String, Object> request) {
-//        Long ruleId = Long.valueOf(request.get("rule_id").toString());
-//        String newRuleString = request.get("new_rule_string").toString();
-//        Rule modifiedRule = ruleService.modifyRule(ruleId, newRuleString);
-//        return ResponseEntity.ok(modifiedRule);
-//    }
+    @PostMapping("/modify_rule")
+    public ResponseEntity<Rule> modifyRule(@RequestBody Map<String, Object> request) {
+        Long ruleId = Long.valueOf(request.get("rule_id").toString());
+        String newRuleString = request.get("new_rule_string").toString();
+        Rule modifiedRule = ruleService.modifyRule(ruleId, newRuleString);
+        return ResponseEntity.ok(modifiedRule);
+    }
 
-    // Additional methods for other operations can be added as needed
+
 }

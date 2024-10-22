@@ -134,7 +134,7 @@ public class RuleService {
         }
 
         // Proceed with the evaluation logic
-        return evaluateAst(ast, data);
+        return evaluate(ast, data);
     }
 
 
@@ -147,86 +147,51 @@ public class RuleService {
         }
     }
 
-    private boolean evaluateAst(ASTNode ast, Map<String, Object> data) {
-        if (ast.getType().equals("operand")) {
-            // Fetch the operand value from the data map (e.g., "salary" -> 60000)
-            String operand = ast.getValue();
-            System.out.println("operand: " + operand);
-            Object value = data.get(operand);  // e.g., value = 60000
-            System.out.println("value: " + value);
-
-            // If value is null, throw an exception (or handle as required)
-            if (value == null) {
-                throw new IllegalArgumentException("Value for operand '" + operand + "' is missing from the data.");
-            }
-
-            // Return a boolean result directly if it is a Boolean value
-            if (value instanceof Boolean) {
-                return (Boolean) value;
-            }
-            // If it's a non-zero number, return true
-            return ((Number) value).doubleValue() != 0;
-        } 
-        else if (ast.getType().equals("operator")) {
-            // Extract the left and right child nodes
-            ASTNode leftNode = convertToASTNode(ast.getLeft());
-            ASTNode rightNode = convertToASTNode(ast.getRight());
-
-            // Evaluate the left and right nodes recursively
-
-            Object leftValue = getValue(leftNode, data);
-            Object rightValue = getValue(rightNode, data);
-
-            System.out.println("Comparing: " + leftValue + " " + ast.getValue() + " " + rightValue);
-
-            switch (ast.getValue()) {
-                case "AND":
-                    return evaluateAst(leftNode, data) && evaluateAst(rightNode, data);
-                case "OR":
-                    return evaluateAst(leftNode, data) || evaluateAst(rightNode, data);
-                case "=":
-                    return leftValue.equals(rightValue);
-                case ">":
-                    return compareNumbers(leftValue, rightValue) > 0;
-                case "<":
-                    return compareNumbers(leftValue, rightValue) < 0;
-                default:
-                    throw new IllegalArgumentException("Unknown operator: " + ast.getValue());
-            }
+    public static boolean evaluate(ASTNode node, Map<String, Object> data) {
+        if (node.getValue() == null) {
+            // It's an operand (leaf node)
+            return data.containsKey(node.getRight()) && data.get(node.getRight()) instanceof Number;
         }
-        return false; // Default case
-    }
 
-    // Helper method to get the value from either the data map or parse a literal
-    private Object getValue(ASTNode node, Map<String, Object> data) {
-        if (node.getType().equals("operand") || node.getType().equals("operator")) {
-            // Fetch value from data map if it exists
-           // return data.getOrDefault(node.getValue(), parseLiteral(node.getValue()));
-        	 ASTNode leftNode = convertToASTNode(node.getLeft());
-        	String left=leftNode.getValue();
-        	//dfgkdgf
-        	//hi hello hi
-            leftNode.setValue(data.get("left").toString());//override
-            return leftNode;
-        }
-        throw new IllegalArgumentException("Invalid node type for value extraction.");
-    }
+        boolean leftValue = (node.getLeft() instanceof ASTNode)
+                ? evaluate((ASTNode) node.getLeft(), data)
+                : data.get(((ASTNode) node.getLeft()).getRight()) instanceof Number;
 
-    // Helper to parse literals like "50000" or "5"
-    private Object parseLiteral(String value) {
-        try {
-            return Double.parseDouble(value); // Assuming all literals are numeric
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid literal: " + value, e);
+        boolean rightValue = (node.getRight() instanceof ASTNode)
+                ? evaluate((ASTNode) node.getRight(), data)
+                : data.get(((ASTNode) node.getRight()).getRight()) instanceof Number;
+
+        switch (node.getValue()) {
+            case "AND":
+                return leftValue && rightValue;
+            case "OR":
+                return leftValue || rightValue;
+            case ">":
+                return compareNumbers(data.get(((ASTNode) node.getLeft()).getRight()), data.get(((ASTNode) node.getRight()).getRight()), ">");
+            case "<":
+                return compareNumbers(data.get(((ASTNode) node.getLeft()).getRight()), data.get(((ASTNode) node.getRight()).getRight()), "<");
+            case "=":
+                return data.get(((ASTNode) node.getLeft()).getRight()).equals(data.get(((ASTNode) node.getRight()).getRight()));
+            default:
+                throw new IllegalArgumentException("Unknown operator: " + node.getValue());
         }
     }
 
-    // Helper to compare two numeric values
-    private int compareNumbers(Object leftValue, Object rightValue) {
-        double leftNum = ((Number) leftValue).doubleValue();
-        double rightNum = ((Number) rightValue).doubleValue();
-        return Double.compare(leftNum, rightNum);
+
+    private static boolean compareNumbers(Object left, Object right, String operator) {
+        if (left instanceof Number && right instanceof Number) {
+            double leftValue = ((Number) left).doubleValue();
+            double rightValue = ((Number) right).doubleValue();
+            return switch (operator) {
+                case ">" -> leftValue > rightValue;
+                case "<" -> leftValue < rightValue;
+                default -> false;
+            };
+        }
+        return false;
     }
+
+   
 
 
     private ASTNode convertToASTNode(Object node) {
