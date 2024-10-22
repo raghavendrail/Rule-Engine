@@ -204,7 +204,7 @@ public class RuleService {
            // return data.getOrDefault(node.getValue(), parseLiteral(node.getValue()));
         	 ASTNode leftNode = convertToASTNode(node.getLeft());
         	String left=leftNode.getValue();
-        	
+        	//dfgkdgf
             leftNode.setValue(data.get("left").toString());//override
             return leftNode;
         }
