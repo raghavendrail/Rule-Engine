@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rule Engine UI</h1>
+
+    <!-- Create Rule Section -->
+    <section>
+        <h2>Create Rule</h2>
+        <label for="ruleString">Rule String:</label>
+        <input type="text" id="ruleString" placeholder="Enter rule string (e.g., age > 30)">
+
+        <button onclick="createRule()">Create Rule</button>
+
+        <div class="result" id="createResult"></div>
+    </section>
+
+    <!-- Combine Rules Section -->
+    <section>
+        <h2>Combine Rules</h2>
+        <label for="rulesList">Comma-separated Rule Strings:</label>
+        <input type="text" id="rulesList" placeholder="Enter rule strings separated by commas">
+
+        <button onclick="combineRules()">Combine Rules</button>
+
+        <div class="result" id="combineResult"></div>
+    </section>
+
+    <!-- Evaluate Rule Section -->
+    <section>
+        <h2>Evaluate Rule</h2>
+        <label for="evaluationRule">Evaluation Rule:</label>
+        <input type="text" id="evaluationRule" placeholder="Enter evaluation rule string">
+
+        <label for="dataInput">Data (JSON format):</label>
+        <input type="text" id="dataInput" placeholder='{"age": 35, "department": "Sales", "salary": 60000, "experience": 3}'>
+
+        <button onclick="evaluateRule()">Evaluate Rule</button>
+
+        <div class="result" id="evaluationResult"></div>
+    </section>
+
+    <script>
+        // Placeholder functions for backend API calls
+        function createRule() {
+            const ruleString = document.getElementById('ruleString').value;
+            // Simulating a backend call
+            const ast = `AST for: ${ruleString}`; // Here you should call your backend API
+            document.getElementById('createResult').innerText = ast;
+        }
+
+        function combineRules() {
+            const rulesList = document.getElementById('rulesList').value.split(',');
+            // Simulating a backend call
+            const combinedAST = `Combined AST for: ${rulesList.join(' AND ')}`; // Call your backend API here
+            document.getElementById('combineResult').innerText = combinedAST;
+        }
+
+        function evaluateRule() {
+            const evaluationRule = document.getElementById('evaluationRule').value;
+            const dataInput = document.getElementById('dataInput').value;
+
+            try {
+                const data = JSON.parse(dataInput);
+                // Simulating a backend call
+                const result = `Evaluating ${evaluationRule} against ${JSON.stringify(data)}`; // Call your backend API here
+                document.getElementById('evaluationResult').innerText = result;
+            } catch (error) {
+                document.getElementById('evaluationResult').innerText = 'Invalid JSON data format!';
+            }
+        }
+    </script>
+</body>
+</html>
